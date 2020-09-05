@@ -4,11 +4,11 @@ import sys
 import random
 import os
 
-sensor_file_emulator_path = "/home/ysf/embedded_soft_project/test/sensor_file_emulator.txt"
+sensor_file_emulator_path = "/home/ysf/embedded_soft_project/embedded_soft_project/Serveur/Python/sensor_file_emulator.txt"
 def init_sensor():
 	if (os.path.isfile(sensor_file_emulator_path)==False) or (os.path.getsize(sensor_file_emulator_path) == 0):
 		f = open(sensor_file_emulator_path, "w")
-		f.write("50.0")
+		f.write("85.0")
 		f.close
 		
 		
