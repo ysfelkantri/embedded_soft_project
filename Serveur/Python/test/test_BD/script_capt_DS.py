@@ -1,27 +1,27 @@
 #!/usr/bin/env python
+
 import sqlite3
-#import RPi.GPIO as GPIO
 import os
 import time
 import glob
 import random
 import sys
 # global variables
-speriod=(5) 
-dbname='/www/tempbase.db'
+speriod=(10) 
+dbname='/home/pi/embedded_soft_project/embedded_project_soft/Client/BD/farm_water.db'
 
-# get temerature
+# get water level
 # returns None on error, or the temperature as a float
-def get_temp():
-    file = open("/home/pi/lab_5/temp.txt", "r") 
+def get_water_level():
+    file = open("/home/pi/embedded_soft_project/embedded_soft_project/Serveur/Python/sensor_file_emulator.txt", "r")
     tempvalue = file.read() 
     return tempvalue
 
 # store the temperature in the database
-def log_temperature(temp):
+def log_water_level(water_level):
     conn=sqlite3.connect(dbname)
     curs=conn.cursor()
-    curs.execute("INSERT INTO temps values(datetime('now'), (?))", (temp,))
+    curs.execute("INSERT INTO water_level_table values(datetime('now'), (?))", (water_level,))
     # commit the changes
     conn.commit()
     conn.close()
@@ -30,26 +30,26 @@ def log_temperature(temp):
 def display_data():
     conn=sqlite3.connect(dbname)
     curs=conn.cursor()
-    #for row in curs.execute("SELECT * FROM temps"):
-    for row in curs.execute("SELECT * FROM temps WHERE rowid= (SELECT MAX(rowid)  FROM temps);"):
-        print str(row[0])+"  |  "+str(row[1])
+    for row in curs.execute("SELECT * FROM water_level_table WHERE rowid= (SELECT MAX(rowid)  FROM water_level_table );"):
+    #for row in curs.execute("SELECT * FROM water_level_table ;"):
+        print ("{}  |  {}".format(str(row[0]),str(row[1])))
     conn.close()
 
 # main function
 def main():
 #    while True:
         # get the temperature from the device file
-        temperature = get_temp()
+        water_level = get_water_level()
 #        temperature = random.uniform(15,30)
-        if temperature != None:
-            print "temperature= "+str(temperature)
+        if water_level != None:
+            print ("water level= {}".format(str(water_level)))
         else:
             # Sometimes reads fail on the first attempt
             # so we need to retry
-            temperature = get_temp()
-            print "temperature="+str(temperature)
+            water_level = get_water_level()
+            print ("water level= {}".format(str(water_level)))
         # Store the temperature in the database
-        log_temperature(temperature)
+        log_water_level(water_level)
         # display the contents of the database
         display_data()
 #        time.sleep(speriod)
@@ -57,6 +57,3 @@ def main():
 
 if __name__=="__main__":
         main()
-
-
-

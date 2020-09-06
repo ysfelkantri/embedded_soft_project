@@ -32,7 +32,7 @@ OFF = 0
 from ctypes import *
 
 # chemin pour shared library qu'on a cree 
-so_file = "/home/pi/embedded_soft_project/Serveur/Drivers/my_functions.so"
+so_file = "/home/pi/embedded_soft_project/embedded_soft_project/Serveur/Drivers/my_functions.so"
 
 # make the functions as a python module 
 my_functions = CDLL(so_file)
@@ -55,31 +55,33 @@ async def level_decrease():
 ##################################################################################################
 async def level_increase():
 	while True :
-		if manipulating_sensor_file.get_sensor_value() >= HIGH_LEVEL_OF_WATER :
-			print("réservoir déjà plein")
-			#high_level_led = ON
-			my_functions.turn_high_level_led_on()
-			#pump_value = OFF
-			my_functions.turn_pump_off()
-			
-	
+		if (manipulating_sensor_file.get_sensor_value() <= HIGH_LEVEL_OF_WATER) and (manipulating_sensor_file.get_sensor_value() >= LOW_LEVEL_OF_WATER) :
+			print("niveau d'eau est au niveau moyen du r  servoir")
+                        #high_level_led = OFF
+			my_functions.turn_high_level_led_off()
+			#low_level_led = OFF
+			my_functions.turn_low_level_led_off()
 		elif manipulating_sensor_file.get_sensor_value() <= LOW_LEVEL_OF_WATER :
 			#low_level_led = ON
+			print("niveau d'eau est inferieur au niveau minimal du r  servoir")
 			my_functions.turn_low_level_led_on()
 			#pump_value =ON
 			my_functions.turn_pump_on()
 			
 			while manipulating_sensor_file.get_sensor_value() <= HIGH_LEVEL_OF_WATER :
-				#low_level_led = OFF
-				my_functions.turn_low_level_led_off()
-				
+				if manipulating_sensor_file.get_sensor_value() >= LOW_LEVEL_OF_WATER :
+					#low_level_led = OFF
+					my_functions.turn_low_level_led_off()
 				manipulating_sensor_file.increment_level_while_pump_turned_on() 
 				print("la pompe pompe maintenant ..., pompe = ON")
 				await asyncio.sleep(3)
 
+			print("niveau d'eau est superieur au niveau maximal du r  servoir")
+			#high_level_led = ON
+			my_functions.turn_high_level_led_on()
 			#pump_value = OFF
 			my_functions.turn_pump_off()
-			print("réservoir est plein , pompe = OFF")
+			print("pompe = OFF")
 
 		await asyncio.sleep(2)
 		
