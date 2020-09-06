@@ -4,6 +4,7 @@
 
 import manipulating_sensor_file
 import asyncio
+import script_pump_for_db
 
 #################################################
 #					constants:					#
@@ -67,6 +68,7 @@ async def level_increase():
 			my_functions.turn_low_level_led_on()
 			#pump_value =ON
 			my_functions.turn_pump_on()
+			script_pump_for_db.log_time_of_launching_pump()
 			
 			while manipulating_sensor_file.get_sensor_value() <= HIGH_LEVEL_OF_WATER :
 				if manipulating_sensor_file.get_sensor_value() >= LOW_LEVEL_OF_WATER :
@@ -87,7 +89,7 @@ async def level_increase():
 		
 		
 ##################################################################################################
-#synchronization entre l'augmentation et la diminution de l'eau dans le reservoir				 #
+# synchronization entre l'augmentation et la diminution de l'eau dans le reservoir				 #
 ################################################################################################## 
 async def main_function() :
 	manipulating_sensor_file.init_sensor()
