@@ -11,8 +11,6 @@ import script_pump_for_db
 #################################################
 HIGH_LEVEL_OF_WATER = 90.0
 LOW_LEVEL_OF_WATER = 87.0
-ON  = 1 
-OFF = 0
 
 #################################################
 #					variables					#
@@ -48,7 +46,7 @@ async def level_decrease():
 	while True :
 		manipulating_sensor_file.init_sensor()
 		manipulating_sensor_file.set_sensor_value()
-		await asyncio.sleep(2)
+		await asyncio.sleep(3)
 
 
 ##################################################################################################
@@ -58,7 +56,7 @@ async def level_increase():
 	while True :
 		if (manipulating_sensor_file.get_sensor_value() <= HIGH_LEVEL_OF_WATER) and (manipulating_sensor_file.get_sensor_value() >= LOW_LEVEL_OF_WATER) :
 			print("niveau d'eau est au niveau moyen du r  servoir")
-                        #high_level_led = OFF
+			#high_level_led = OFF
 			my_functions.turn_high_level_led_off()
 			#low_level_led = OFF
 			my_functions.turn_low_level_led_off()
@@ -76,7 +74,7 @@ async def level_increase():
 					my_functions.turn_low_level_led_off()
 				manipulating_sensor_file.increment_level_while_pump_turned_on() 
 				print("la pompe pompe maintenant ..., pompe = ON")
-				await asyncio.sleep(3)
+				await asyncio.sleep(4)
 
 			print("niveau d'eau est superieur au niveau maximal du r  servoir")
 			#high_level_led = ON

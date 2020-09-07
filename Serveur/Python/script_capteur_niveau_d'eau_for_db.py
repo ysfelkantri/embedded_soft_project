@@ -7,8 +7,8 @@ import glob
 import random
 import sys
 # global variables
-speriod=(10) 
-dbname='/home/pi/embedded_soft_project/embedded_project_soft/Client/BD/farm_water.db'
+speriod=(5) 
+dbname='/home/pi/embedded_soft_project/embedded_soft_project/Client/BD/farm_water.db'
 
 # get water level
 # returns None on error, or the temperature as a float
