@@ -15,7 +15,7 @@ dbname='/home/pi/embedded_soft_project/embedded_soft_project/Client/BD/farm_wate
 def log_time_of_launching_pump():
     conn=sqlite3.connect(dbname)
     curs=conn.cursor()
-    curs.execute("INSERT INTO pompe_table values(datetime('now'));")
+    curs.execute("INSERT INTO pompe_table values(Date('now'));")
     # commit the changes
     conn.commit()
     conn.close()

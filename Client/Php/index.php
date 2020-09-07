@@ -4,8 +4,23 @@
 $dbh = new PDO("sqlite:/home/ysf/embedded_soft_project/embedded_soft_project/Client/BD/farm_water.db");
 
 //Requetes de selection de dernier 24 valeurs  
-$sql = "SELECT * FROM water_level_table WHERE rowid>=(SELECT MAX(rowid)-24  FROM water_level_table);";
+$sql1 = "SELECT * FROM water_level_table WHERE rowid>=(SELECT MAX(rowid)-100  FROM water_level_table);";
+$sql2 = " SELECT time_of_launching_pump, COUNT(*) FROM pompe_table WHERE rowid>=(SELECT MAX(rowid)-7  FROM pompe_table) GROUP BY time_of_launching_pump;";
 ?>
+
+<?php
+echo "pump table <br></br>" ;
+	foreach ($dbh->query($sql2) as $row){	
+    echo nl2br('[new Date("'.$row[0].'"),'.$row[1].'],' );
+	}
+	
+echo "<br></br> water level table <br></br>" ;
+	foreach ($dbh->query($sql1) as $row){          	
+		echo nl2br('[new Date("'.$row['time_of_picking'].'"),'.$row['water_level'].'],' );
+	}
+?>
+
+
 
 <html>
   <head>
@@ -19,8 +34,10 @@ $sql = "SELECT * FROM water_level_table WHERE rowid>=(SELECT MAX(rowid)-24  FROM
         var data = google.visualization.arrayToDataTable([
     	    ['Time of picking', 'water level'],
     	    <?php
-          	foreach ($dbh->query($sql) as $row){
-          	
+          	foreach ($dbh->query($sql1) as $row){
+          	if ($row['water_level']==NULL){
+          		continue;
+          	}
     		echo '[new Date("'.$row['time_of_picking'].'"),'.$row['water_level'].'],' ;
 			}
           	?>        
@@ -38,7 +55,7 @@ $sql = "SELECT * FROM water_level_table WHERE rowid>=(SELECT MAX(rowid)-24  FROM
         chart.draw(data, options);
       
 
-};
+};	
     </script>
   </head>
   <body>
