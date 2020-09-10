@@ -1,4 +1,0 @@
-
-sqlite3 farm_water.db
-CREATE TABLE water_level_table (time_of_picking DATETIME, water_level NUMERIC);
-CREATE TABLE pompe_table (time_of_launching_pump DATE);

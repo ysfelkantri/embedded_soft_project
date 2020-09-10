@@ -22,10 +22,10 @@ def log_time_of_launching_pump():
 
 # display the contents of the database
 def display_data():
-    conn=sqlite3.connect(dbname)
-    curs=conn.cursor()
-    #for row in curs.execute("SELECT * FROM pompe_table WHERE rowid= (SELECT MAX(rowid)  FROM pompe_table );"):
-    for row in curs.execute("SELECT * FROM pompe_table ;"):
+	conn=sqlite3.connect(dbname)
+	curs=conn.cursor()
+	#for row in curs.execute("SELECT * FROM pompe_table WHERE rowid= (SELECT MAX(rowid)  FROM pompe_table );"):
+	for row in curs.execute("SELECT * FROM pompe_table ;"):
 		print ("time of launching : {}".format(str(row[0])))
-    conn.close()
+	conn.close()
 

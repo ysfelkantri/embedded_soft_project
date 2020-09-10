@@ -1,11 +1,12 @@
 <?php
 
 //Connexion a la base de donnees 
-$dbh = new PDO("sqlite:/home/ysf/embedded_soft_project/embedded_soft_project/Client/BD/farm_water.db");
+$dbh = new PDO("sqlite:/home/pi/embedded_soft_project/embedded_soft_project/Client/BD/farm_water.db");
 
-//Requetes de selection de dernier 24 valeurs  
+//Requetes de selection 100 valeurs de niveau d'eau par jour 
 $sql1 = "SELECT * FROM water_level_table WHERE rowid>=(SELECT MAX(rowid)-100  FROM water_level_table);";
-$sql2 = " SELECT time_of_launching_pump, COUNT(*) FROM pompe_table WHERE rowid>=(SELECT MAX(rowid)-7  FROM pompe_table) GROUP BY time_of_launching_pump;";
+//Requetes de selection de dernier 7 valeurs (une semaine)  
+$sql2 = "SELECT time_of_launching_pump, COUNT(*) FROM pompe_table where time_of_launching_pump>=(Date('now','-6 days')) GROUP BY time_of_launching_pump;";
 ?>
 
 <?php
@@ -28,10 +29,10 @@ echo "<br></br> water level table <br></br>" ;
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
 
-      // Load Charts and the corechart and barchart packages.
+      // Load Charts and the Lineechart and barchart packages.
       google.charts.load('current', {'packages':['corechart']});
 
-      // Draw the pie chart and bar chart when Charts is loaded.
+      // Draw the line chart and bar chart when Charts is loaded.
       google.charts.setOnLoadCallback(drawChart);
 	  
 	  function drawChart() {
@@ -43,7 +44,7 @@ echo "<br></br> water level table <br></br>" ;
           		continue;
           	}
           	//to change minimal treshold "80%":
-    		echo '[new Date("'.$row['time_of_picking'].'"),'.$row['water_level'].',80],' ;
+    		echo '[new Date("'.$row['time_of_picking'].'"),'.$row['water_level'].',86],' ;
 			}
           	?>        
         ]);
@@ -61,7 +62,7 @@ echo "<br></br> water level table <br></br>" ;
         var linechart_options = {title:'water level quantity',
         				seriesType: "line",
    	 					series: {
-						90: {
+						5: {
 							type:"steppedArea",
 							color: '#FF0000',
 							visibleInLegend: true,
@@ -76,6 +77,7 @@ echo "<br></br> water level table <br></br>" ;
         var barchart_options = {
           title: 'pump water consumption',
           width: 600,
+	  	  height:300,
           series: [{color: 'blue', visibleInLegend: true}, {color: 'red', visibleInLegend: false}],
           //colors: ['red'],
           legend: { position: 'none' },
@@ -100,20 +102,27 @@ echo "<br></br> water level table <br></br>" ;
 </script>
 <body class="bg">
  <div > 
-    <!--Table and divs that hold the pie charts-->
+    <!--Table and divs that hold the line and bar charts-->
     
    <div style="margin-top:13% ;" >
     <table class="columns" align="center" >
       <tr>
         <td style="margin-top:40px ;">
-        	<div id="linechart_div" style="border: 1px solid #ccc"></div></td>
+        	<div id="linechart_div" style="border: 1px solid #ccc"></div>
+        	<form method="post">
+        	<input type= "submit" name="start_pumping" class="button" value="start pumping" /> 
+        	</td>
         <td 	style="width: 6%;"></td>
         <td>
         	<div id="barchart_div" style="border: 1px solid #ccc"></div>
         	<form method="post">
         	<input type= "submit" name="average" class="button" value="show average" /> 
-        	
+        	</form>
         	<?php
+        	if (isset($_POST["start_pumping"])){
+        	exec("python /www/C-bin/pumping_water.py");
+        	}
+        	// calculer la moyene de consommation d'eau d'une semaine 
         	if (isset($_POST["average"])){
         	$sum = 0;
           	$i = 0;
@@ -121,8 +130,8 @@ echo "<br></br> water level table <br></br>" ;
           	$i++;
           	$sum += $row[1] ;
           	}
-        	$average = ($sum/$i)*750 ;
-			echo nl2br("<div class=headline> Weekly water consumption average : <span class=subheadline> ".(float)$average."liters/day</span></div>");
+        	$average = (int)($sum/$i)*750 ;
+			echo nl2br("<div class=headline> Weekly water consumption average : <span class=subheadline> ".$average."liters/day</span></div>");
         	}
         	?>
         	
@@ -134,11 +143,15 @@ echo "<br></br> water level table <br></br>" ;
   </body>
 </html>
 
+<!--CSS-code-->
 
 <style>
 body, html {
+  position: relative;
   height: 100%;
+  width: 100% ;
   margin: 0;
+  overflow-y: hidden;
 }
 
 .bg {
@@ -150,8 +163,12 @@ body, html {
 
   /* Center and scale the image nicely */
   background-position: center;
+  background-size: cover;
   background-repeat: no-repeat;
+  background-color: #293d3d
   background-size: 100% 100%;
+  overflow-y: auto;
+  
 }
 
 .headline{
@@ -193,3 +210,4 @@ body, html {
 //fermer la base de donnee 
 $dbh = null;
 ?>
+
