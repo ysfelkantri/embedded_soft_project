@@ -37,14 +37,14 @@ echo "<br></br> water level table <br></br>" ;
 	  
 	  function drawChart() {
         var data1 = google.visualization.arrayToDataTable([
-    	    ['Time of picking', 'water level','minimal treshold'],
+    	    ['Time of picking', 'water level','minimal treshold','maximal treshold'],
     	    <?php
           	foreach ($dbh->query($sql1) as $row){
           	if ($row['water_level']==NULL){
           		continue;
           	}
-          	//to change minimal treshold "80%":
-    		echo '[new Date("'.$row['time_of_picking'].'"),'.$row['water_level'].',86],' ;
+          	//to change minimal treshold "86%" and maximal treshold "92%" :
+    		echo '[new Date("'.$row['time_of_picking'].'"),'.$row['water_level'].',85,90],' ;
 			}
           	?>        
         ]);
@@ -61,14 +61,10 @@ echo "<br></br> water level table <br></br>" ;
         
         var linechart_options = {title:'water level quantity',
         				seriesType: "line",
-   	 					series: {
-						5: {
-							type:"steppedArea",
-							color: '#FF0000',
-							visibleInLegend: true,
-							//areaOpacity: 0,
-							enableInteractivity: false
-						  }
+    					series: {
+						0: { color: '#03cffc' },
+            					1: { color: '#fc0303' },
+            					2: { color: '#03fc14' },
 						},
                      	width:550,
                      	height:400};
@@ -109,19 +105,22 @@ echo "<br></br> water level table <br></br>" ;
       <tr>
         <td style="margin-top:40px ;">
         	<div id="linechart_div" style="border: 1px solid #ccc"></div>
-        	<form method="post">
-        	<input type= "submit" name="start_pumping" class="button" value="start pumping" /> 
-        	</td>
-        <td 	style="width: 6%;"></td>
+		<form method="post">
+                <input type= "submit" name="start_pumping" class="button" value="start pumping" /> 
+                </form>
+
+		</td>
+        <td style="width: 6%;"></td>
         <td>
         	<div id="barchart_div" style="border: 1px solid #ccc"></div>
         	<form method="post">
         	<input type= "submit" name="average" class="button" value="show average" /> 
-        	</form>
+		</form>
+
         	<?php
         	if (isset($_POST["start_pumping"])){
-        	exec("python /www/C-bin/pumping_water.py");
-        	}
+		exec("sudo python /www/C-bin/pumping_water.py");
+		}
         	// calculer la moyene de consommation d'eau d'une semaine 
         	if (isset($_POST["average"])){
         	$sum = 0;
